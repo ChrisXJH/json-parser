@@ -19,7 +19,7 @@ int main(int argc, char const *argv[]) {
     }
     std::cout << std::endl << std::endl;;
 
-    const std::vector<std::vector<Symbol> > productions = parse(tokens);
+    const std::vector<std::vector<ParserToken> > productions = parse(tokens);
     std::cout << "Productions: " << std::endl;
     for (const auto &p : productions) {
       bool first = true;

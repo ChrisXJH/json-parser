@@ -4,7 +4,7 @@
 #include <vector>
 #include "scanner.h"
 
-enum Symbol {
+enum ParserTokenType {
   JSON,
   BOF,
   END,
@@ -33,6 +33,19 @@ enum Symbol {
   UNDEFINED
 };
 
+
+class ParserToken {
+  ParserTokenType type;
+  std::string lexeme;
+
+  public:
+  ParserToken();
+  ParserToken(const ParserTokenType &t);
+  ParserToken(const ParserTokenType &t, const std::string &le);
+  ParserTokenType getType() const;
+  std::string getLexeme() const;
+};
+
 class ParsingException {
   std::string msg;
 
@@ -43,21 +56,21 @@ class ParsingException {
 };
 
 class ParseTreeNode {
-  Symbol type;
+  ParserToken type;
   std::string lexeme;
   std::vector<ParseTreeNode> children;
 
   public:
   ParseTreeNode();
-  ParseTreeNode(const Symbol &type);
-  ParseTreeNode(const Symbol &type, const std::string &lexeme);
-  Symbol getType() const;
+  ParseTreeNode(const ParserToken &type);
+  ParseTreeNode(const ParserToken &type, const std::string &lexeme);
+  ParserToken getType() const;
   std::string getLexeme() const;
   ParseTreeNode getChild(const int index) const;
   void addChild(const ParseTreeNode &node);
 };
 
-std::vector<std::vector<Symbol> > parse(std::vector<Token> tokens);
-std::ostream &operator<<(std::ostream &out, const Symbol &sym);
+std::vector<std::vector<ParserToken> > parse(std::vector<Token> tokens);
+std::ostream &operator<<(std::ostream &out, const ParserToken &sym);
 
 #endif
