@@ -4,48 +4,24 @@
 #include <vector>
 #include "scanner.h"
 
-enum ParserTokenType {
-  JSON,
-  BOF,
-  END,
-  OBJECT,
-  LEFT_BRACE,
-  RIGHT_BRACE,
-  LEFT_BRACKET,
-  RIGHT_BRACKET,
-  VALUE,
-  VALUES,
-  ELEMENT,
-  ELEMENTS,
-  MEMBERS,
-  PAIRS,
-  PAIR,
-  ARRAY,
-  ID,
-  BOOLEAN,
-  NUM,
-  NULL_VAL,
-  COMMA,
-  QUOTE,
-  COLON,
-  STRING,
-  STRING_EXP,
-  UNDEFINED
-};
 
-
-class ParserToken {
-  ParserTokenType type;
-  std::string lexeme;
+/**
+ * ParserToken class
+ * extends from Token class
+ */
+class ParserToken: public Token {
 
   public:
   ParserToken();
-  ParserToken(const ParserTokenType &t);
-  ParserToken(const ParserTokenType &t, const std::string &le);
-  ParserTokenType getType() const;
-  std::string getLexeme() const;
+  ParserToken(const TokenType &t);
+  ParserToken(const TokenType &t, const std::string &le);
+  ~ParserToken() override;
 };
 
+
+/**
+ * ParsingException class
+ */
 class ParsingException {
   std::string msg;
 
@@ -55,6 +31,10 @@ class ParsingException {
   std::string getMessage() const;
 };
 
+
+/**
+ * ParseTreeNode class
+ */ 
 class ParseTreeNode {
   ParserToken type;
   std::string lexeme;
@@ -70,7 +50,10 @@ class ParseTreeNode {
   void addChild(const ParseTreeNode &node);
 };
 
-std::vector<std::vector<ParserToken> > parse(std::vector<Token> tokens);
-std::ostream &operator<<(std::ostream &out, const ParserToken &sym);
+
+/**
+ * Parses a list of scanned tokens
+ */ 
+std::vector<std::vector<ParserToken> > parse(std::vector<ScannerToken> tokens);
 
 #endif

@@ -6,10 +6,19 @@
 #include <vector>
 #include "token.h"
 
+
 /**
  * Token class
  */
-class ScannerToken: public Token {};
+class ScannerToken: public Token {
+
+  public:
+  ScannerToken();
+  ScannerToken(const TokenType &t);
+  ScannerToken(const TokenType &t, const std::string &le);
+  ~ScannerToken() override;
+};
+
 
 /**
  * Scanning Exception
@@ -28,7 +37,5 @@ class ScanningException {
  * Scans code and returns a list of tokens
  */
 std::vector<ScannerToken> scan(const std::string &code);
-
-std::ostream &operator<<(std::ostream &out, const Token &token);
 
 #endif

@@ -5,13 +5,11 @@
 
 ParserToken::ParserToken() {}
 
-ParserToken::ParserToken(const ParserTokenType &t): type{t} {}
+ParserToken::ParserToken(const TokenType &t): Token{t} {}
 
-ParserToken::ParserToken(const ParserTokenType &t, const std::string &le): type{t}, lexeme{le} {}
+ParserToken::ParserToken(const TokenType &t, const std::string &le): Token{t, le} {}
 
-ParserTokenType ParserToken::getType() const { return this->type; }
-
-std::string ParserToken::getLexeme() const { return this->lexeme; }
+ParserToken::~ParserToken() {}
 
 ParsingException::ParsingException() {}
 
@@ -33,32 +31,32 @@ ParseTreeNode ParseTreeNode::getChild(const int index) const { return this->chil
 
 void ParseTreeNode::addChild(const ParseTreeNode &node) { this->children.emplace_back(node); }
 
-const std::vector<std::vector<ParserTokenType> > productionRules{
-  std::vector<ParserTokenType>{ JSON, BOF, OBJECT, END },
-  std::vector<ParserTokenType>{ OBJECT, LEFT_BRACE, MEMBERS, RIGHT_BRACE },
-  std::vector<ParserTokenType>{ MEMBERS },
-  std::vector<ParserTokenType>{ MEMBERS, PAIRS, PAIR },
-  std::vector<ParserTokenType>{ PAIRS },
-  std::vector<ParserTokenType>{ PAIRS, PAIRS, PAIR, COMMA },
-  std::vector<ParserTokenType>{ PAIR, STRING, COLON, VALUE },
-  std::vector<ParserTokenType>{ VALUE, STRING },
-  std::vector<ParserTokenType>{ VALUE, NUM },
-  std::vector<ParserTokenType>{ VALUE, OBJECT },
-  std::vector<ParserTokenType>{ VALUE, ARRAY },
-  std::vector<ParserTokenType>{ VALUE, BOOLEAN },
-  std::vector<ParserTokenType>{ VALUE, NULL_VAL },
-  std::vector<ParserTokenType>{ STRING, QUOTE, STRING_EXP, QUOTE },
-  std::vector<ParserTokenType>{ ARRAY, LEFT_BRACKET, ELEMENTS, RIGHT_BRACKET },
-  std::vector<ParserTokenType>{ ELEMENTS },
-  std::vector<ParserTokenType>{ ELEMENTS, VALUES, VALUE },
-  std::vector<ParserTokenType>{ VALUES },
-  std::vector<ParserTokenType>{ VALUES, VALUES, VALUE, COMMA },
-  std::vector<ParserTokenType>{ STRING_EXP },
-  std::vector<ParserTokenType>{ STRING_EXP, STRING_EXP, NUM },
-  std::vector<ParserTokenType>{ STRING_EXP, STRING_EXP, ID },
+const std::vector<std::vector<TokenType> > productionRules{
+  std::vector<TokenType>{ JSON, BOF, OBJECT, END },
+  std::vector<TokenType>{ OBJECT, LEFT_BRACE, MEMBERS, RIGHT_BRACE },
+  std::vector<TokenType>{ MEMBERS },
+  std::vector<TokenType>{ MEMBERS, PAIRS, PAIR },
+  std::vector<TokenType>{ PAIRS },
+  std::vector<TokenType>{ PAIRS, PAIRS, PAIR, COMMA },
+  std::vector<TokenType>{ PAIR, STRING, COLON, VALUE },
+  std::vector<TokenType>{ VALUE, STRING },
+  std::vector<TokenType>{ VALUE, NUM },
+  std::vector<TokenType>{ VALUE, OBJECT },
+  std::vector<TokenType>{ VALUE, ARRAY },
+  std::vector<TokenType>{ VALUE, BOOLEAN },
+  std::vector<TokenType>{ VALUE, NULL_VAL },
+  std::vector<TokenType>{ STRING, QUOTE, STRING_EXP, QUOTE },
+  std::vector<TokenType>{ ARRAY, LEFT_BRACKET, ELEMENTS, RIGHT_BRACKET },
+  std::vector<TokenType>{ ELEMENTS },
+  std::vector<TokenType>{ ELEMENTS, VALUES, VALUE },
+  std::vector<TokenType>{ VALUES },
+  std::vector<TokenType>{ VALUES, VALUES, VALUE, COMMA },
+  std::vector<TokenType>{ STRING_EXP },
+  std::vector<TokenType>{ STRING_EXP, STRING_EXP, NUM },
+  std::vector<TokenType>{ STRING_EXP, STRING_EXP, ID },
 };
 
-const std::vector<ParserTokenType> terminals{
+const std::vector<TokenType> terminals{
   BOF,
   END,
   LEFT_BRACE,
@@ -74,9 +72,9 @@ const std::vector<ParserTokenType> terminals{
   COLON
 };
 
-std::map<ParserTokenType, std::map<ParserTokenType, int> > predictionTable;
+std::map<TokenType, std::map<TokenType, int> > predictionTable;
 
-void registerPrediction(const ParserTokenType &symbol, const ParserTokenType &on, const int ruleIndex) {
+void registerPrediction(const TokenType &symbol, const TokenType &on, const int ruleIndex) {
   predictionTable[symbol][on] = ruleIndex;
 }
 
@@ -132,56 +130,8 @@ void init() {
   registerPrediction(STRING_EXP, ID, 21);
 }
 
-bool isTerminal(const ParserTokenType &sym) {
+bool isTerminal(const TokenType &sym) {
   return std::find(terminals.begin(), terminals.end(), sym) != terminals.end();
-}
-
-ParserTokenType getTokenParserTokenType(const Token &token) {
-  switch (token.getType()) {
-    case Token::ID:  return ID;
-    case Token::NUM: return NUM;
-    case Token::COLON:  return COLON;
-    case Token::COMMA:  return COMMA;
-    case Token::QUOTE:  return QUOTE;
-    case Token::LEFT_BRACE: return LEFT_BRACE;
-    case Token::RIGHT_BRACE: return RIGHT_BRACE;
-    case Token::LEFT_BRACKET: return LEFT_BRACKET;
-    case Token::RIGHT_BRACKET: return RIGHT_BRACKET;
-    case Token::BOF: return BOF;
-    case Token::END: return END;
-    default: return UNDEFINED;
-  }
-  return UNDEFINED;
-}
-
-std::ostream &operator<<(std::ostream &out, const ParserToken &token) {
-  switch (token.getType()) {
-    case ID:  out << "ID"; break;
-    case NUM: out << "NUM"; break;
-    case ARRAY: out << "ARRAY"; break;
-    case COLON:  out << "COLON"; break;
-    case COMMA:  out << "COMMA"; break;
-    case QUOTE:  out << "QUOTE"; break;
-    case LEFT_BRACE: out << "LEFT_BRACE"; break;
-    case RIGHT_BRACE: out << "RIGHT_BRACE"; break;
-    case LEFT_BRACKET: out << "LEFT_BRACKET"; break;
-    case RIGHT_BRACKET: out << "RIGHT_BRACKET"; break;
-    case BOF: out << "BOF"; break;
-    case END: out << "END"; break;
-    case OBJECT: out << "OBJECT"; break;
-    case ELEMENTS: out << "ELEMENTS"; break;
-    case STRING: out << "STRING"; break;
-    case STRING_EXP: out << "STRING_EXP"; break;
-    case VALUE: out << "VALUE"; break;
-    case VALUES: out << "VALUES"; break;
-    case PAIR: out << "PAIR"; break;
-    case PAIRS: out << "PAIRS"; break;
-    case MEMBERS: out << "MEMBERS"; break;
-    case JSON:  out << "JSON"; break;
-    default: out << "Sym not recognized."; break;
-  }
-  out << "(\'" << token.getLexeme() << "\')";
-  return out;
 }
 
 template <class T>
@@ -221,29 +171,21 @@ void stackPush(std::vector<T> &stack, const std::vector<T> &items) {
   }
 }
 
-std::vector<ParserTokenType> getRule(const int index) {
+std::vector<TokenType> getRule(const int index) {
   return productionRules[index];
 }
 
-std::vector<ParserTokenType> getProductions(std::vector<ParserTokenType> rule) {
+std::vector<TokenType> getProductions(std::vector<TokenType> rule) {
   rule.erase(rule.begin());
   return rule;
 }
 
-bool canReduce(const ParserTokenType &curr, const ParserTokenType &on) {
+bool canReduce(const TokenType &curr, const TokenType &on) {
   return predictionTable.find(curr) != predictionTable.end() &&
   predictionTable[curr].find(on) != predictionTable[curr].end();
 }
 
-void print(const std::string &str) {
-  std::cout << str;
-}
-
-void println(const std::string &str) {
-  std::cout << str << std::endl;
-}
-
-std::vector<ParserToken> ruleToTokens(const std::vector<ParserTokenType> &rule) {
+std::vector<ParserToken> ruleToTokens(const std::vector<TokenType> &rule) {
   std::vector<ParserToken> result{};
   for (const auto &type : rule) {
     result.emplace_back(ParserToken{type});
@@ -251,32 +193,36 @@ std::vector<ParserToken> ruleToTokens(const std::vector<ParserTokenType> &rule) 
   return result;
 }
 
-void reduce(std::vector<ParserTokenType> &stack, const Token &token, std::vector<std::vector<ParserToken> > &result) {
-  ParserTokenType curr = stackTop<ParserTokenType>(stack);
-  const ParserTokenType on = getTokenParserTokenType(token);
+void reduce(std::vector<TokenType> &stack, const Token &token, std::vector<std::vector<ParserToken> > &result) {
+  TokenType curr = stackTop<TokenType>(stack);
+  const TokenType on = token.getType();
   while (canReduce(curr, on)) {
-    const std::vector<ParserTokenType> rule = getRule(predictionTable[curr][on]);
+    const std::vector<TokenType> rule = getRule(predictionTable[curr][on]);
     result.emplace_back(ruleToTokens(rule));
-    const std::vector<ParserTokenType> productions = getProductions(rule);
-    stackPop<ParserTokenType>(stack);
-    stackPush<ParserTokenType>(stack, productions);
-    curr = stackTop<ParserTokenType>(stack);
+    const std::vector<TokenType> productions = getProductions(rule);
+    stackPop<TokenType>(stack);
+    stackPush<TokenType>(stack, productions);
+    curr = stackTop<TokenType>(stack);
   }
 }
 
-std::vector<std::vector<ParserToken> > parse(std::vector<Token> tokens) {
+std::vector<std::vector<ParserToken> > parse(std::vector<ScannerToken> tokens) {
   init();
   ParseTreeNode parseTree{};
-  std::vector<ParserTokenType> stack{ JSON };
-  std::vector<std::vector<ParserToken> > productions{};
-  while (hasNext<Token>(tokens)) {
-    const Token token = next<Token>(tokens);
+  std::vector<TokenType> stack{ JSON };
+  std::vector<std::vector<ParserToken> > result{};
+  while (hasNext<ScannerToken>(tokens)) {
+    const ScannerToken token = next<ScannerToken>(tokens);
     const std::string lexeme = token.getLexeme();
-    if (token.getType() == Token::WHITESPACE) continue;
-    const ParserTokenType tokenSym = getTokenParserTokenType(token);
-    reduce(stack, token, productions);
-    const ParserTokenType currState = stackTop(stack);
-    if (tokenSym == currState) {
+    const TokenType type = token.getType();
+    if (type == WHITESPACE) continue;
+    reduce(stack, token, result);
+    const TokenType currState = stackTop(stack);
+    if (type == currState) {
+      result.emplace_back(std::vector<ParserToken>{
+        ParserToken{type},
+        ParserToken{TERMINAL, token.getLexeme()}
+      });
       stackPop(stack);
     }
     else {
@@ -287,5 +233,5 @@ std::vector<std::vector<ParserToken> > parse(std::vector<Token> tokens) {
       throw ParsingException{"Failed to parse token: " + token.getLexeme() + "."};
     }
   }
-  return productions;
+  return result;
 }

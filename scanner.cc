@@ -2,6 +2,14 @@
 #include <cctype>
 #include <map>
 
+ScannerToken::ScannerToken() {}
+
+ScannerToken::ScannerToken(const TokenType &t): Token{t} {}
+
+ScannerToken::ScannerToken(const TokenType &t, const std::string &le): Token{t, le} {}
+
+ScannerToken::~ScannerToken() {}
+
 ScanningException::ScanningException() {}
 
 ScanningException::ScanningException(const std::string &msg): msg{msg} {}
@@ -122,10 +130,11 @@ std::vector<ScannerToken> scan(const std::string &code) {
   DFA::State currState = DFA::startState();
   DFA::State prevState = currState;
   std::string lexeme;
-  std::vector<ScannerToken> result;
+  std::vector<ScannerToken> result{};
   std::string::const_iterator it = code.begin();
   while (true) {
     if (it == code.end()) {
+      ScannerToken t{};
       if (DFA::isAccepting(currState)) result.emplace_back(ScannerToken{stateToScannerTokenType(currState), lexeme});
       break;
     }
@@ -156,24 +165,3 @@ std::vector<ScannerToken> scan(const std::string &code) {
   return result;
 }
 
-std::ostream &operator<<(std::ostream &out, const ScannerToken &token) {
-  std::string type;
-  switch (token.getType()) {
-    case ID: type = "ID"; break;
-    case QUOTE: type = "QUOTE"; break;
-    case COLON: type = "COLON"; break;
-    case NUM: type = "NUM"; break;
-    case LEFT_BRACKET: type = "LEFT_BRACKET"; break;
-    case RIGHT_BRACKET: type = "RIGHT_BRACKET"; break;
-    case LEFT_BRACE: type = "LEFT_BRACE"; break;
-    case RIGHT_BRACE: type = "RIGHT_BRACE"; break;
-    case COMMA: type = "COMMA"; break;
-    case BOF: type = "BOF"; break;
-    case END: type = "END"; break;
-    case WHITESPACE: type = "WHITESPACE"; break;
-    case UNDEFINED: type = "UNDEFINED"; break;
-    default: type = ""; break;
-  }
-  out << type << "(\'" << token.getLexeme() << "\') ";
-  return out;
-}
