@@ -4,35 +4,24 @@
 #include <vector>
 #include "scanner.h"
 
-enum Symbol {
-  JSON,
-  BOF,
-  END,
-  OBJECT,
-  LEFT_BRACE,
-  RIGHT_BRACE,
-  LEFT_BRACKET,
-  RIGHT_BRACKET,
-  VALUE,
-  VALUES,
-  ELEMENT,
-  ELEMENTS,
-  MEMBERS,
-  PAIRS,
-  PAIR,
-  ARRAY,
-  ID,
-  BOOLEAN,
-  NUM,
-  NULL_VAL,
-  COMMA,
-  QUOTE,
-  COLON,
-  STRING,
-  STRING_EXP,
-  UNDEFINED
+
+/**
+ * ParserToken class
+ * extends from Token class
+ */
+class ParserToken: public Token {
+
+  public:
+  ParserToken();
+  ParserToken(const TokenType &t);
+  ParserToken(const TokenType &t, const std::string &le);
+  ~ParserToken() override;
 };
 
+
+/**
+ * ParsingException class
+ */
 class ParsingException {
   std::string msg;
 
@@ -42,22 +31,29 @@ class ParsingException {
   std::string getMessage() const;
 };
 
+
+/**
+ * ParseTreeNode class
+ */ 
 class ParseTreeNode {
-  Symbol type;
+  ParserToken type;
   std::string lexeme;
   std::vector<ParseTreeNode> children;
 
   public:
   ParseTreeNode();
-  ParseTreeNode(const Symbol &type);
-  ParseTreeNode(const Symbol &type, const std::string &lexeme);
-  Symbol getType() const;
+  ParseTreeNode(const ParserToken &type);
+  ParseTreeNode(const ParserToken &type, const std::string &lexeme);
+  ParserToken getType() const;
   std::string getLexeme() const;
   ParseTreeNode getChild(const int index) const;
   void addChild(const ParseTreeNode &node);
 };
 
-std::vector<std::vector<Symbol> > parse(std::vector<Token> tokens);
-std::ostream &operator<<(std::ostream &out, const Symbol &sym);
+
+/**
+ * Parses a list of scanned tokens
+ */ 
+std::vector<std::vector<ParserToken> > parse(std::vector<ScannerToken> tokens);
 
 #endif

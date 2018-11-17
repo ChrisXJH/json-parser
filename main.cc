@@ -10,18 +10,18 @@ int main(int argc, char const *argv[]) {
     code += line;
   }
   try {
-    std::vector<Token> tokens = scan(code);
-    tokens.insert(tokens.begin(), Token{Token::BOF, "BOF"});
-    tokens.emplace_back(Token{Token::END, "END"});
+    std::vector<ScannerToken> tokens = scan(code);
+    tokens.insert(tokens.begin(), ScannerToken{BOF, "BOF"});
+    tokens.emplace_back(ScannerToken{END, "END"});
     std::cout << "Tokens: " << std::endl;
     for (const auto &token : tokens) {
-      std::cout << token;
+        std::cout << token;
     }
     std::cout << std::endl << std::endl;;
 
-    const std::vector<std::vector<Symbol> > productions = parse(tokens);
+    const std::vector<std::vector<ParserToken> > result = parse(tokens);
     std::cout << "Productions: " << std::endl;
-    for (const auto &p : productions) {
+    for (const auto &p : result) {
       bool first = true;
       for (const auto &i : p) {
         std::cout << i << (first ? " -> " : " ");

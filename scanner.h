@@ -4,39 +4,19 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "token.h"
+
 
 /**
  * Token class
  */
-class Token {
+class ScannerToken: public Token {
+
   public:
-  enum Type {
-    ID,
-    QUOTE,
-    COLON,
-    NUM,
-    BOOLEAN,
-    NULL_VAL,
-    WHITESPACE,
-    LEFT_BRACKET,
-    RIGHT_BRACKET,
-    LEFT_BRACE,
-    RIGHT_BRACE,
-    UNDEFINED,
-    COMMA,
-    BOF,
-    END
-};
-
- private:
- Type type;
- std::string lexeme;
-
- public:
- Token();
- Token(const Type &t, const std::string &le);
- Type getType() const;
- std::string getLexeme() const;
+  ScannerToken();
+  ScannerToken(const TokenType &t);
+  ScannerToken(const TokenType &t, const std::string &le);
+  ~ScannerToken() override;
 };
 
 
@@ -56,8 +36,6 @@ class ScanningException {
 /**
  * Scans code and returns a list of tokens
  */
-std::vector<Token> scan(const std::string &code);
-
-std::ostream &operator<<(std::ostream &out, const Token &token);
+std::vector<ScannerToken> scan(const std::string &code);
 
 #endif
